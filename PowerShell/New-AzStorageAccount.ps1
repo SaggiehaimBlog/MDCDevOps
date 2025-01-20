@@ -29,6 +29,10 @@ param (
     [string] $tfBackendContainerName
 )
 
+# Import Azure CLI context into PowerShell
+Write-Output "Importing Azure CLI Context..."
+Connect-AzAccount -Identity | Out-Null
+
 # Get Storage account, if it exists.
 $storageAccount = Get-AzStorageAccount -Name $tfBackendStorageAccountName -ResourceGroupName $tfBackendResourceGroupName -ErrorAction SilentlyContinue;
 
