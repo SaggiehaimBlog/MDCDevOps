@@ -31,7 +31,11 @@ param (
 
 # Import Azure CLI context into PowerShell
 Write-Output "Importing Azure CLI Context..."
-Connect-AzAccount -Identity | Out-Null
+$azContext = az account show | ConvertFrom-Json
+$azToken = az account get-access-token | ConvertFrom-Json
+$azureContext = [Microsoft.Azure.Commands.Common.Authentication.Abstractions.AzureRmProfile]::new()
+$azureCred = [Microsoft.Azure.Commands.Common.Authentication.AzureSession]::Instance.AuthenticationFactory.CreateFrom($azToken.accessToken)
+$null = Connect-AzAccount -AccessToken $azToken.accessToken -AccountId $azContext.user.name -TenantId $azContext.tenantId -Subscription $azContext.id
 
 # Get Storage account, if it exists.
 $storageAccount = Get-AzStorageAccount -Name $tfBackendStorageAccountName -ResourceGroupName $tfBackendResourceGroupName -ErrorAction SilentlyContinue;
