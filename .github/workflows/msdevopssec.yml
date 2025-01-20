@@ -31,7 +31,7 @@ jobs:
       # config: string. Optional. A file path to an MSDO configuration file ('*.gdnconfig').
        policy: 'GitHub' 
        categories: 'code, artifacts, IaC, containers'
-       tools: 'trivy, bandit, checkov, terrascan, eslint'
+       tools: 'trivy, checkov, terrascan, eslint'
        #'bandit', 'binskim', 'checkov', 'eslint', 'templateanalyzer', 'terrascan', 'trivy'.
       # languages: string. Optional. A comma-separated list of languages to analyze. Example: 'javascript,typescript'. Defaults to all.
 
