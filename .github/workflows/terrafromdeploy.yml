@@ -85,13 +85,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Azure Login with Managed Identity
-        uses: azure/login@v1
-        with:
-          client-id: ${{ secrets.USER_ASSIGNED_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
       - name: Setup Terraform Azure Auth
         run: |
           echo "ARM_USE_MSI=true" >> $GITHUB_ENV
@@ -99,17 +92,33 @@ jobs:
           echo "ARM_SUBSCRIPTION_ID=${{ secrets.AZURE_SUBSCRIPTION_ID }}" >> $GITHUB_ENV
           echo "ARM_TENANT_ID=${{ secrets.AZURE_TENANT_ID }}" >> $GITHUB_ENV
 
+      - name: Azure Login with Managed Identity
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.USER_ASSIGNED_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: 1.10.4
 
       - name: Terraform Init
+        env:
+          ARM_USE_MSI: true
+          ARM_CLIENT_ID: ${{ secrets.USER_ASSIGNED_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         run: |
           terraform init \
             -backend-config="resource_group_name=${{ env.TERRAFORM_STORAGE_RG }}" \
             -backend-config="storage_account_name=${{ env.TERRAFORM_STORAGE_ACCOUNT }}" \
             -backend-config="container_name=${{ env.TERRAFORM_STORAGE_CONTAINER }}" \
+            -backend-config="use_msi=true" \
+            -backend-config="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" \
+            -backend-config="tenant_id=${{ secrets.AZURE_TENANT_ID }}" \
+            -backend-config="client_id=${{ secrets.USER_ASSIGNED_CLIENT_ID }}" \
             -backend-config="key=01-service-uai.tfstate"
         working-directory: Terraform/01-service-uai
 
@@ -130,13 +139,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Azure Login with Managed Identity
-        uses: azure/login@v1
-        with:
-          client-id: ${{ secrets.USER_ASSIGNED_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
       - name: Setup Terraform Azure Auth
         run: |
           echo "ARM_USE_MSI=true" >> $GITHUB_ENV
@@ -144,17 +146,33 @@ jobs:
           echo "ARM_SUBSCRIPTION_ID=${{ secrets.AZURE_SUBSCRIPTION_ID }}" >> $GITHUB_ENV
           echo "ARM_TENANT_ID=${{ secrets.AZURE_TENANT_ID }}" >> $GITHUB_ENV
 
+      - name: Azure Login with Managed Identity
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.USER_ASSIGNED_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: 1.10.4
 
       - name: Terraform Init
+        env:
+          ARM_USE_MSI: true
+          ARM_CLIENT_ID: ${{ secrets.USER_ASSIGNED_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         run: |
           terraform init \
             -backend-config="resource_group_name=${{ env.TERRAFORM_STORAGE_RG }}" \
             -backend-config="storage_account_name=${{ env.TERRAFORM_STORAGE_ACCOUNT }}" \
             -backend-config="container_name=${{ env.TERRAFORM_STORAGE_CONTAINER }}" \
+            -backend-config="use_msi=true" \
+            -backend-config="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" \
+            -backend-config="tenant_id=${{ secrets.AZURE_TENANT_ID }}" \
+            -backend-config="client_id=${{ secrets.USER_ASSIGNED_CLIENT_ID }}" \
             -backend-config="key=02-service-kv.tfstate"
         working-directory: Terraform/02-service-kv
 
@@ -177,13 +195,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Azure Login with Managed Identity
-        uses: azure/login@v1
-        with:
-          client-id: ${{ secrets.USER_ASSIGNED_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
       - name: Setup Terraform Azure Auth
         run: |
           echo "ARM_USE_MSI=true" >> $GITHUB_ENV
@@ -191,17 +202,33 @@ jobs:
           echo "ARM_SUBSCRIPTION_ID=${{ secrets.AZURE_SUBSCRIPTION_ID }}" >> $GITHUB_ENV
           echo "ARM_TENANT_ID=${{ secrets.AZURE_TENANT_ID }}" >> $GITHUB_ENV
 
+      - name: Azure Login with Managed Identity
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.USER_ASSIGNED_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: 1.10.4
 
       - name: Terraform Init
+        env:
+          ARM_USE_MSI: true
+          ARM_CLIENT_ID: ${{ secrets.USER_ASSIGNED_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         run: |
           terraform init \
             -backend-config="resource_group_name=${{ env.TERRAFORM_STORAGE_RG }}" \
             -backend-config="storage_account_name=${{ env.TERRAFORM_STORAGE_ACCOUNT }}" \
             -backend-config="container_name=${{ env.TERRAFORM_STORAGE_CONTAINER }}" \
+            -backend-config="use_msi=true" \
+            -backend-config="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" \
+            -backend-config="tenant_id=${{ secrets.AZURE_TENANT_ID }}" \
+            -backend-config="client_id=${{ secrets.USER_ASSIGNED_CLIENT_ID }}" \
             -backend-config="key=03-service-acr.tfstate"
         working-directory: Terraform/03-service-acr
 
@@ -255,13 +282,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Azure Login with Managed Identity
-        uses: azure/login@v1
-        with:
-          client-id: ${{ secrets.USER_ASSIGNED_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
       - name: Setup Terraform Azure Auth
         run: |
           echo "ARM_USE_MSI=true" >> $GITHUB_ENV
@@ -269,17 +289,33 @@ jobs:
           echo "ARM_SUBSCRIPTION_ID=${{ secrets.AZURE_SUBSCRIPTION_ID }}" >> $GITHUB_ENV
           echo "ARM_TENANT_ID=${{ secrets.AZURE_TENANT_ID }}" >> $GITHUB_ENV
 
+      - name: Azure Login with Managed Identity
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.USER_ASSIGNED_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: 1.10.4
 
       - name: Terraform Init
+        env:
+          ARM_USE_MSI: true
+          ARM_CLIENT_ID: ${{ secrets.USER_ASSIGNED_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
         run: |
           terraform init \
             -backend-config="resource_group_name=${{ env.TERRAFORM_STORAGE_RG }}" \
             -backend-config="storage_account_name=${{ env.TERRAFORM_STORAGE_ACCOUNT }}" \
             -backend-config="container_name=${{ env.TERRAFORM_STORAGE_CONTAINER }}" \
+            -backend-config="use_msi=true" \
+            -backend-config="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" \
+            -backend-config="tenant_id=${{ secrets.AZURE_TENANT_ID }}" \
+            -backend-config="client_id=${{ secrets.USER_ASSIGNED_CLIENT_ID }}" \
             -backend-config="key=04-service-web.tfstate"
         working-directory: Terraform/04-service-web
 
