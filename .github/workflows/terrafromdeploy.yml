@@ -75,7 +75,6 @@ jobs:
             -tfBackendResourceGroupName "${{ env.TERRAFORM_STORAGE_RG }}" `
             -tfBackendStorageAccountName "${{ env.TERRAFORM_STORAGE_ACCOUNT }}" `
             -tfBackendStorageAccountSku "Standard_LRS" `
-            -subscriptionId "${{ secrets.AZURE_SUBSCRIPTION_ID }}" `
             -tfBackendContainerName "${{ env.TERRAFORM_STORAGE_CONTAINER }}"
 
   service-uai:
