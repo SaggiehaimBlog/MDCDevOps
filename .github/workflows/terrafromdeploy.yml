@@ -13,8 +13,41 @@ on:
           - 03-service-acr
           - 04-service-web
 
+env:
+  TERRAFORM_STORAGE_RG: "MDC-Demo-rg"
+  TERRAFORM_STORAGE_ACCOUNT: "mdcdemosa01"
+  TERRAFORM_STORAGE_CONTAINER: "tfstate"
+
 jobs:
+  storage-deployment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Azure Login with Managed Identity
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.USER_ASSIGNED_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Install Az PowerShell module
+        shell: pwsh
+        run: |
+          Install-Module -Name Az -Force -AllowClobber -Scope CurrentUser
+
+      - name: Deploy Storage Account
+        shell: pwsh
+        run: |
+          ./PowerShell/New-AzStorageAccount.ps1 `
+            -tfBackendResourceGroupName "${{ env.TERRAFORM_STORAGE_RG }}" `
+            -tfBackendStorageAccountName "${{ env.TERRAFORM_STORAGE_ACCOUNT }}" `
+            -tfBackendStorageAccountSku "Standard_LRS" `
+            -tfBackendContainerName "${{ env.TERRAFORM_STORAGE_CONTAINER }}"
+
   service-uai:
+    needs: storage-deployment
     if: github.event.inputs.service == '01-service-uai'
     runs-on: ubuntu-latest
     steps:
@@ -36,9 +69,9 @@ jobs:
       - name: Terraform Init
         run: |
           terraform init \
-            -backend-config="resource_group_name=${{ secrets.TERRAFORM_STORAGE_RG }}" \
-            -backend-config="storage_account_name=${{ secrets.TERRAFORM_STORAGE_ACCOUNT }}" \
-            -backend-config="container_name=${{ secrets.TERRAFORM_STORAGE_CONTAINER }}" \
+            -backend-config="resource_group_name=${{ env.TERRAFORM_STORAGE_RG }}" \
+            -backend-config="storage_account_name=${{ env.TERRAFORM_STORAGE_ACCOUNT }}" \
+            -backend-config="container_name=${{ env.TERRAFORM_STORAGE_CONTAINER }}" \
             -backend-config="key=01-service-uai.tfstate"
         working-directory: Terraform/01-service-uai
 
@@ -52,6 +85,7 @@ jobs:
         working-directory: Terraform/01-service-uai
 
   service-kv:
+    needs: storage-deployment
     if: github.event.inputs.service == '02-service-kv'
     runs-on: ubuntu-latest
     steps:
@@ -73,9 +107,9 @@ jobs:
       - name: Terraform Init
         run: |
           terraform init \
-            -backend-config="resource_group_name=${{ secrets.TERRAFORM_STORAGE_RG }}" \
-            -backend-config="storage_account_name=${{ secrets.TERRAFORM_STORAGE_ACCOUNT }}" \
-            -backend-config="container_name=${{ secrets.TERRAFORM_STORAGE_CONTAINER }}" \
+            -backend-config="resource_group_name=${{ env.TERRAFORM_STORAGE_RG }}" \
+            -backend-config="storage_account_name=${{ env.TERRAFORM_STORAGE_ACCOUNT }}" \
+            -backend-config="container_name=${{ env.TERRAFORM_STORAGE_CONTAINER }}" \
             -backend-config="key=02-service-kv.tfstate"
         working-directory: Terraform/02-service-kv
 
@@ -89,6 +123,7 @@ jobs:
         working-directory: Terraform/02-service-kv
 
   service-acr:
+    needs: storage-deployment
     if: github.event.inputs.service == '03-service-acr'
     runs-on: ubuntu-latest
     steps:
@@ -110,9 +145,9 @@ jobs:
       - name: Terraform Init
         run: |
           terraform init \
-            -backend-config="resource_group_name=${{ secrets.TERRAFORM_STORAGE_RG }}" \
-            -backend-config="storage_account_name=${{ secrets.TERRAFORM_STORAGE_ACCOUNT }}" \
-            -backend-config="container_name=${{ secrets.TERRAFORM_STORAGE_CONTAINER }}" \
+            -backend-config="resource_group_name=${{ env.TERRAFORM_STORAGE_RG }}" \
+            -backend-config="storage_account_name=${{ env.TERRAFORM_STORAGE_ACCOUNT }}" \
+            -backend-config="container_name=${{ env.TERRAFORM_STORAGE_CONTAINER }}" \
             -backend-config="key=03-service-acr.tfstate"
         working-directory: Terraform/03-service-acr
 
@@ -126,6 +161,7 @@ jobs:
         working-directory: Terraform/03-service-acr
 
   service-web:
+    needs: storage-deployment
     if: github.event.inputs.service == '04-service-web'
     runs-on: ubuntu-latest
     steps:
@@ -147,9 +183,9 @@ jobs:
       - name: Terraform Init
         run: |
           terraform init \
-            -backend-config="resource_group_name=${{ secrets.TERRAFORM_STORAGE_RG }}" \
-            -backend-config="storage_account_name=${{ secrets.TERRAFORM_STORAGE_ACCOUNT }}" \
-            -backend-config="container_name=${{ secrets.TERRAFORM_STORAGE_CONTAINER }}" \
+            -backend-config="resource_group_name=${{ env.TERRAFORM_STORAGE_RG }}" \
+            -backend-config="storage_account_name=${{ env.TERRAFORM_STORAGE_ACCOUNT }}" \
+            -backend-config="container_name=${{ env.TERRAFORM_STORAGE_CONTAINER }}" \
             -backend-config="key=04-service-web.tfstate"
         working-directory: Terraform/04-service-web
 
