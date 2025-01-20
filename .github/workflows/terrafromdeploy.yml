@@ -3,15 +3,30 @@ name: Terraform Deploy
 on:
   workflow_dispatch:
     inputs:
-      service:
-        description: 'Service to deploy'
-        required: true
-        type: choice
-        options:
-          - 01-service-uai
-          - 02-service-kv
-          - 03-service-acr
-          - 04-service-web
+      service-storage:
+        description: 'Deploy Storage Account'
+        type: boolean
+        default: false
+      service-container:
+        description: 'Deploy Storage Container'
+        type: boolean
+        default: false
+      service-uai:
+        description: 'Deploy User Assigned Identity'
+        type: boolean
+        default: false
+      service-kv:
+        description: 'Deploy Key Vault'
+        type: boolean
+        default: false
+      service-acr:
+        description: 'Deploy Container Registry'
+        type: boolean
+        default: false
+      service-web:
+        description: 'Deploy Web App'
+        type: boolean
+        default: false
 
 env:
   TERRAFORM_STORAGE_RG: "MDC-Demo-rg"
@@ -21,6 +36,16 @@ env:
 jobs:
   storage-deployment:
     runs-on: ubuntu-latest
+    if: |
+      inputs.service-storage == true || 
+      inputs.service-container == true || 
+      inputs.service-uai == true || 
+      inputs.service-kv == true || 
+      inputs.service-acr == true || 
+      inputs.service-web == true
+    outputs:
+      storage_account_name: ${{ env.TERRAFORM_STORAGE_ACCOUNT }}
+      container_name: ${{ env.TERRAFORM_STORAGE_CONTAINER }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -38,6 +63,7 @@ jobs:
           Install-Module -Name Az -Force -AllowClobber -Scope CurrentUser
 
       - name: Deploy Storage Account
+        if: inputs.service-storage == true
         shell: pwsh
         run: |
           ./PowerShell/New-AzStorageAccount.ps1 `
@@ -46,9 +72,16 @@ jobs:
             -tfBackendStorageAccountSku "Standard_LRS" `
             -tfBackendContainerName "${{ env.TERRAFORM_STORAGE_CONTAINER }}"
 
+      - name: Deploy Container
+        if: inputs.service-container == true
+        shell: pwsh
+        run: |
+          $storageAccount = Get-AzStorageAccount -ResourceGroupName "${{ env.TERRAFORM_STORAGE_RG }}" -Name "${{ env.TERRAFORM_STORAGE_ACCOUNT }}"
+          New-AzStorageContainer -Name "${{ env.TERRAFORM_STORAGE_CONTAINER }}" -Context $storageAccount.Context -ErrorAction SilentlyContinue
+
   service-uai:
     needs: storage-deployment
-    if: github.event.inputs.service == '01-service-uai'
+    if: inputs.service-uai == true && (inputs.service-storage == false || inputs.service-container == false)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -86,7 +119,7 @@ jobs:
 
   service-kv:
     needs: storage-deployment
-    if: github.event.inputs.service == '02-service-kv'
+    if: inputs.service-kv == true && (inputs.service-storage == false || inputs.service-container == false)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -124,8 +157,10 @@ jobs:
 
   service-acr:
     needs: storage-deployment
-    if: github.event.inputs.service == '03-service-acr'
+    if: inputs.service-acr == true && (inputs.service-storage == false || inputs.service-container == false)
     runs-on: ubuntu-latest
+    outputs:
+      acr_name: mdcdemoacr01
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -160,9 +195,42 @@ jobs:
         run: terraform apply -auto-approve tfplan
         working-directory: Terraform/03-service-acr
 
+  build-and-push:
+    needs: service-acr
+    if: |
+      inputs.service-acr == true &&
+      (github.event_name == 'push' && contains(github.event.changes, 'website/'))
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Azure Login with Managed Identity
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.USER_ASSIGNED_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: ACR Login with Azure CLI
+        run: |
+          az acr login --name ${{ needs.service-acr.outputs.acr_name }}
+
+      - name: Build and push Docker image
+        run: |
+          IMAGE_TAG=${{ github.sha }}
+          ACR_NAME=${{ needs.service-acr.outputs.acr_name }}
+          docker build -t ${ACR_NAME}.azurecr.io/newssite:${IMAGE_TAG} ./website
+          docker push ${ACR_NAME}.azurecr.io/newssite:${IMAGE_TAG}
+          docker tag ${ACR_NAME}.azurecr.io/newssite:${IMAGE_TAG} ${ACR_NAME}.azurecr.io/newssite:latest
+          docker push ${ACR_NAME}.azurecr.io/newssite:latest
+
   service-web:
-    needs: storage-deployment
-    if: github.event.inputs.service == '04-service-web'
+    needs: [storage-deployment, build-and-push]
+    if: inputs.service-web == true && (inputs.service-storage == false || inputs.service-container == false)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
