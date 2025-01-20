@@ -79,7 +79,7 @@ jobs:
 
   service-uai:
     needs: storage-deployment
-    if: inputs.service-uai == 'true' && (inputs.service-storage == 'false' || inputs.service-container == 'false') || cancelled()
+    if: inputs.service-uai == 'true' && (inputs.service-storage == 'false' || inputs.service-container == 'false') || always()
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
