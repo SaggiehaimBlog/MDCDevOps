@@ -28,7 +28,6 @@ on:
         type: boolean
         default: false
 
-# Add permissions block here
 permissions:
   id-token: write
   contents: read
@@ -67,6 +66,11 @@ jobs:
         shell: pwsh
         run: |
           Install-Module -Name Az -Force -AllowClobber -Scope CurrentUser
+
+      - name: Setup Azure PowerShell Context
+        shell: pwsh
+        run: |
+          Set-AzContext -Subscription "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
 
       - name: Deploy Storage Account
         if: inputs.service-storage == true
