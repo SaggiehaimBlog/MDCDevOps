@@ -13,9 +13,6 @@ Storage Account SKU.
 
 .PARAMETER -tfBackendContainerName
 The name of the cotainer where the TF state file will reside.
-
-.PARAMETER subscriptionId
-The name of the subscription where the storage account will be deployed.
 #>
 
 param (
@@ -29,12 +26,11 @@ param (
     [string] $tfBackendStorageAccountSku,
 
     [Parameter(Mandatory = $true)]
-    [string] $tfBackendContainerName,
-
-    [Parameter(Mandatory = $true)]
-    [string] $subscriptionId
+    [string] $tfBackendContainerName
 )
-Set-AzContext -Subscription $subscriptionId | Out-Null
+
+# Connect using managed identity
+Connect-AzAccount -Identity
 
 # Get Storage account, if it exists.
 $storageAccount = Get-AzStorageAccount -Name $tfBackendStorageAccountName -ResourceGroupName $tfBackendResourceGroupName -ErrorAction SilentlyContinue;

@@ -7,10 +7,6 @@ on:
         description: 'Deploy Storage Account'
         type: boolean
         default: false
-      service-container:
-        description: 'Deploy Storage Container'
-        type: boolean
-        default: false
       service-uai:
         description: 'Deploy User Assigned Identity'
         type: boolean
@@ -23,6 +19,10 @@ on:
         description: 'Deploy Container Registry'
         type: boolean
         default: false
+      service-container:
+          description: 'Build Container Image'
+          type: boolean
+          default: false
       service-web:
         description: 'Deploy Web App'
         type: boolean
@@ -41,12 +41,7 @@ jobs:
   storage-deployment:
     runs-on: ubuntu-latest
     if: |
-      inputs.service-storage == true || 
-      inputs.service-container == true || 
-      inputs.service-uai == true || 
-      inputs.service-kv == true || 
-      inputs.service-acr == true || 
-      inputs.service-web == true
+      inputs.service-storage == true
     outputs:
       storage_account_name: ${{ env.TERRAFORM_STORAGE_ACCOUNT }}
       container_name: ${{ env.TERRAFORM_STORAGE_CONTAINER }}
@@ -82,13 +77,6 @@ jobs:
             -tfBackendStorageAccountSku "Standard_LRS" `
             -subscriptionId "${{ secrets.AZURE_SUBSCRIPTION_ID }}" `
             -tfBackendContainerName "${{ env.TERRAFORM_STORAGE_CONTAINER }}"
-
-      - name: Deploy Container
-        if: inputs.service-container == true
-        shell: pwsh
-        run: |
-          $storageAccount = Get-AzStorageAccount -ResourceGroupName "${{ env.TERRAFORM_STORAGE_RG }}" -Name "${{ env.TERRAFORM_STORAGE_ACCOUNT }}"
-          New-AzStorageContainer -Name "${{ env.TERRAFORM_STORAGE_CONTAINER }}" -Context $storageAccount.Context -ErrorAction SilentlyContinue
 
   service-uai:
     needs: storage-deployment
@@ -209,7 +197,7 @@ jobs:
   build-and-push:
     needs: service-acr
     if: |
-      inputs.service-acr == true &&
+      inputs.service-container == true &&
       (github.event_name == 'push' && contains(github.event.changes, 'website/'))
     runs-on: ubuntu-latest
     steps:

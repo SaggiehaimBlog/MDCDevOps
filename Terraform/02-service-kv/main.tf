@@ -1,17 +1,18 @@
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "~>3.0"
+    }
+  }
+  backend "azurerm" {}
+}
 
 provider "azurerm" {
-  # The "feature" block is required for AzureRM provider 2.x. 
-  # If you are using version 1.x, the "features" block is not allowed.
-  version = "~>3.0"
   features {}
-  
-  skip_provider_registration = true
+  use_oidc = true
 }
 
-terraform {
-  backend "azurerm" {
-  }
-}
 #######-----------Declaring Data for the process -----------------------------------------#
 
 data "azurerm_client_config" "current" {}
