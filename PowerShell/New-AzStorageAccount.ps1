@@ -28,7 +28,8 @@ param (
     [Parameter(Mandatory = $true)]
     [string] $tfBackendContainerName
 )
-
+$subscription = get-azcontext | select -ExpandProperty Subscription;
+Write-Output $subscription
 # Get Storage account, if it exists.
 $storageAccount = Get-AzStorageAccount -Name $tfBackendStorageAccountName -ResourceGroupName $tfBackendResourceGroupName -ErrorAction SilentlyContinue;
 
@@ -46,8 +47,6 @@ if ($null -eq $storageAccount) {
         AllowBlobPublicAccess   = $false
       }
     $storageAccount = New-AzStorageAccount @arguments
-
-    $storageAccount
 
     # Create new Storage Account contaniner
     Write-Output "Creating new Storage Account Container: '$($tfBackendContainerName)'";
