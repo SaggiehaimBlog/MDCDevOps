@@ -1,0 +1,7 @@
+{
+    "id": "1",
+    "title": "Web Assembly 3.0 Specification Released",
+    "content": "The W3C has officially released the WebAssembly 3.0 specification, introducing garbage collection and improved JavaScript integration. These updates promise to make web applications faster and more efficient, potentially transforming how developers build complex web applications.",
+    "author": "Tom Wilson",
+    "publishDate": "2024-01-17"
+}

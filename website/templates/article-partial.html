@@ -1,0 +1,14 @@
+{{define "article-partial.html"}}
+<article class="news-card">
+    {{if .ImageUrl}}
+    <div class="article-image">
+        <img src="{{.ImageUrl}}" alt="{{.Title}}">
+    </div>
+    {{end}}
+    <div class="article-content">
+        <h2>{{.Title}}</h2>
+        <p class="meta">By {{.Author}} | {{.PublishDate}}</p>
+        <p class="content">{{.Content}}</p>
+    </div>
+</article>
+{{end}}

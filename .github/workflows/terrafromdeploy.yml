@@ -1,0 +1,163 @@
+name: Terraform Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      service:
+        description: 'Service to deploy'
+        required: true
+        type: choice
+        options:
+          - 01-service-uai
+          - 02-service-kv
+          - 03-service-acr
+          - 04-service-web
+
+jobs:
+  service-uai:
+    if: github.event.inputs.service == '01-service-uai'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Azure Login with Managed Identity
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.USER_ASSIGNED_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.5.0
+
+      - name: Terraform Init
+        run: |
+          terraform init \
+            -backend-config="resource_group_name=${{ secrets.TERRAFORM_STORAGE_RG }}" \
+            -backend-config="storage_account_name=${{ secrets.TERRAFORM_STORAGE_ACCOUNT }}" \
+            -backend-config="container_name=${{ secrets.TERRAFORM_STORAGE_CONTAINER }}" \
+            -backend-config="key=01-service-uai.tfstate"
+        working-directory: Terraform/01-service-uai
+
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+        working-directory: Terraform/01-service-uai
+
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: terraform apply -auto-approve tfplan
+        working-directory: Terraform/01-service-uai
+
+  service-kv:
+    if: github.event.inputs.service == '02-service-kv'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Azure Login with Managed Identity
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.USER_ASSIGNED_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.5.0
+
+      - name: Terraform Init
+        run: |
+          terraform init \
+            -backend-config="resource_group_name=${{ secrets.TERRAFORM_STORAGE_RG }}" \
+            -backend-config="storage_account_name=${{ secrets.TERRAFORM_STORAGE_ACCOUNT }}" \
+            -backend-config="container_name=${{ secrets.TERRAFORM_STORAGE_CONTAINER }}" \
+            -backend-config="key=02-service-kv.tfstate"
+        working-directory: Terraform/02-service-kv
+
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+        working-directory: Terraform/02-service-kv
+
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: terraform apply -auto-approve tfplan
+        working-directory: Terraform/02-service-kv
+
+  service-acr:
+    if: github.event.inputs.service == '03-service-acr'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Azure Login with Managed Identity
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.USER_ASSIGNED_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.5.0
+
+      - name: Terraform Init
+        run: |
+          terraform init \
+            -backend-config="resource_group_name=${{ secrets.TERRAFORM_STORAGE_RG }}" \
+            -backend-config="storage_account_name=${{ secrets.TERRAFORM_STORAGE_ACCOUNT }}" \
+            -backend-config="container_name=${{ secrets.TERRAFORM_STORAGE_CONTAINER }}" \
+            -backend-config="key=03-service-acr.tfstate"
+        working-directory: Terraform/03-service-acr
+
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+        working-directory: Terraform/03-service-acr
+
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: terraform apply -auto-approve tfplan
+        working-directory: Terraform/03-service-acr
+
+  service-web:
+    if: github.event.inputs.service == '04-service-web'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Azure Login with Managed Identity
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.USER_ASSIGNED_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.5.0
+
+      - name: Terraform Init
+        run: |
+          terraform init \
+            -backend-config="resource_group_name=${{ secrets.TERRAFORM_STORAGE_RG }}" \
+            -backend-config="storage_account_name=${{ secrets.TERRAFORM_STORAGE_ACCOUNT }}" \
+            -backend-config="container_name=${{ secrets.TERRAFORM_STORAGE_CONTAINER }}" \
+            -backend-config="key=04-service-web.tfstate"
+        working-directory: Terraform/04-service-web
+
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+        working-directory: Terraform/04-service-web
+
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: terraform apply -auto-approve tfplan
+        working-directory: Terraform/04-service-web

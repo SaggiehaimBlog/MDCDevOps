@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tech Top News</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="https://unpkg.com/htmx.org@1.9.6"></script>
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <h1>News Portal</h1>
+            <div class="menu-toggle">☰</div>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section class="articles" id="articles-container">
+            {{range $index, $article := .}}
+                {{if eq $index 0}}
+                    <article class="featured-article">
+                        <div class="featured-image">
+                            <img src="{{$article.ImageUrl}}" alt="{{$article.Title}}">
+                        </div>
+                        <div class="featured-content">
+                            <h2>{{$article.Title}}</h2>
+                            <p class="meta">By {{$article.Author}} | {{$article.PublishDate}}</p>
+                            <p class="content">{{$article.Content}}</p>
+                        </div>
+                    </article>
+                {{else}}
+                    {{template "article-partial.html" .}}
+                {{end}}
+            {{end}}
+        </section>
+        
+        <button class="load-more"
+                hx-get="/load-more"
+                hx-target="#articles-container"
+                hx-swap="beforeend">
+            Load More
+        </button>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 News Portal. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
