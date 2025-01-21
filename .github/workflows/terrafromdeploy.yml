@@ -134,7 +134,7 @@ jobs:
 
   service-kv:
     needs: storage-deployment
-    if: inputs.service-kv == true && (inputs.service-storage == false || inputs.service-container == false)
+    if: inputs.service-kv == true && (inputs.service-storage == false || inputs.service-container == false) || always()
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -187,7 +187,7 @@ jobs:
 
   service-acr:
     needs: storage-deployment
-    if: inputs.service-acr == true && (inputs.service-storage == false || inputs.service-container == false)
+    if: inputs.service-acr == true && (inputs.service-storage == false || inputs.service-container == false) || always()
     runs-on: ubuntu-latest
     outputs:
       acr_name: mdcdemoacr01
@@ -275,7 +275,7 @@ jobs:
 
   service-web:
     needs: [storage-deployment, build-and-push]
-    if: inputs.service-web == true && (inputs.service-storage == false || inputs.service-container == false)
+    if: inputs.service-web == true && (inputs.service-storage == false || inputs.service-container == false) || always()
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
