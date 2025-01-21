@@ -51,6 +51,7 @@ resource "azurerm_app_service" "container" {
   location            = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
   app_service_plan_id = azurerm_app_service_plan.website.id
+  https_only          = true
 
   identity {
     type = "UserAssigned"
@@ -61,6 +62,7 @@ resource "azurerm_app_service" "container" {
 
   site_config {
     linux_fx_version = "DOCKER|${data.azurerm_container_registry.acr.login_server}/newssite:latest"
+    http2_enabled = true
   }
 
   app_settings = {
