@@ -63,6 +63,7 @@ resource "azurerm_app_service" "container" {
   site_config {
     linux_fx_version = "DOCKER|${data.azurerm_container_registry.acr.login_server}/newssite:latest"
     http2_enabled = true
+    acr_user_managed_identity_client_id = data.azurerm_user_assigned_identity.app_uai.id
   }
 
   app_settings = {
