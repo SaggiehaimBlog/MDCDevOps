@@ -1,0 +1,285 @@
+name: Terraform Destroy
+
+on:
+  workflow_dispatch:
+    inputs:
+      service-storage:
+        description: 'Destroy Storage Account'
+        type: boolean
+        default: false
+      service-uai:
+        description: 'Destroy User Assigned Identity'
+        type: boolean
+        default: false
+      service-kv:
+        description: 'Destroy Key Vault'
+        type: boolean
+        default: false
+      service-acr:
+        description: 'Destroy Container Registry'
+        type: boolean
+        default: false
+      service-web:
+        description: 'Destroy Web App'
+        type: boolean
+        default: false
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  TERRAFORM_STORAGE_RG: "MDC-Demo-rg"
+  TERRAFORM_STORAGE_ACCOUNT: "mdcdemosa01"
+  TERRAFORM_STORAGE_CONTAINER: "tfstate"
+
+jobs:
+  service-web:
+    if: inputs.service-web == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform Azure Auth
+        run: |
+          echo "ARM_USE_MSI=true" >> $GITHUB_ENV
+          echo "ARM_CLIENT_ID=${{ secrets.USER_ASSIGNED_CLIENT_ID }}" >> $GITHUB_ENV
+          echo "ARM_SUBSCRIPTION_ID=${{ secrets.AZURE_SUBSCRIPTION_ID }}" >> $GITHUB_ENV
+          echo "ARM_TENANT_ID=${{ secrets.AZURE_TENANT_ID }}" >> $GITHUB_ENV
+
+      - name: Azure Login with Managed Identity
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.USER_ASSIGNED_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.10.4
+
+      - name: Terraform Init
+        env:
+          ARM_USE_MSI: true
+          ARM_CLIENT_ID: ${{ secrets.USER_ASSIGNED_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+        run: |
+          terraform init \
+            -backend-config="resource_group_name=${{ env.TERRAFORM_STORAGE_RG }}" \
+            -backend-config="storage_account_name=${{ env.TERRAFORM_STORAGE_ACCOUNT }}" \
+            -backend-config="container_name=${{ env.TERRAFORM_STORAGE_CONTAINER }}" \
+            -backend-config="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" \
+            -backend-config="tenant_id=${{ secrets.AZURE_TENANT_ID }}" \
+            -backend-config="client_id=${{ secrets.USER_ASSIGNED_CLIENT_ID }}" \
+            -backend-config="use_oidc=true" \
+            -backend-config="key=04-service-web.tfstate"
+        working-directory: Terraform/04-service-web
+
+      - name: Terraform Destroy
+        run: terraform destroy -auto-approve
+        working-directory: Terraform/04-service-web
+        env:
+          ARM_USE_MSI: true
+          ARM_CLIENT_ID: ${{ secrets.USER_ASSIGNED_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+
+  service-acr:
+    needs: service-web
+    if: inputs.service-acr == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform Azure Auth
+        run: |
+          echo "ARM_USE_MSI=true" >> $GITHUB_ENV
+          echo "ARM_CLIENT_ID=${{ secrets.USER_ASSIGNED_CLIENT_ID }}" >> $GITHUB_ENV
+          echo "ARM_SUBSCRIPTION_ID=${{ secrets.AZURE_SUBSCRIPTION_ID }}" >> $GITHUB_ENV
+          echo "ARM_TENANT_ID=${{ secrets.AZURE_TENANT_ID }}" >> $GITHUB_ENV
+
+      - name: Azure Login with Managed Identity
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.USER_ASSIGNED_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.10.4
+
+      - name: Terraform Init
+        env:
+          ARM_USE_MSI: true
+          ARM_CLIENT_ID: ${{ secrets.USER_ASSIGNED_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+        run: |
+          terraform init \
+            -backend-config="resource_group_name=${{ env.TERRAFORM_STORAGE_RG }}" \
+            -backend-config="storage_account_name=${{ env.TERRAFORM_STORAGE_ACCOUNT }}" \
+            -backend-config="container_name=${{ env.TERRAFORM_STORAGE_CONTAINER }}" \
+            -backend-config="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" \
+            -backend-config="tenant_id=${{ secrets.AZURE_TENANT_ID }}" \
+            -backend-config="client_id=${{ secrets.USER_ASSIGNED_CLIENT_ID }}" \
+            -backend-config="use_oidc=true" \
+            -backend-config="key=03-service-acr.tfstate"
+        working-directory: Terraform/03-service-acr
+
+      - name: Terraform Destroy
+        run: terraform destroy -auto-approve
+        working-directory: Terraform/03-service-acr
+        env:
+          ARM_USE_MSI: true
+          ARM_CLIENT_ID: ${{ secrets.USER_ASSIGNED_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+
+  service-kv:
+    needs: [service-web, service-acr]
+    if: inputs.service-kv == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform Azure Auth
+        run: |
+          echo "ARM_USE_MSI=true" >> $GITHUB_ENV
+          echo "ARM_CLIENT_ID=${{ secrets.USER_ASSIGNED_CLIENT_ID }}" >> $GITHUB_ENV
+          echo "ARM_SUBSCRIPTION_ID=${{ secrets.AZURE_SUBSCRIPTION_ID }}" >> $GITHUB_ENV
+          echo "ARM_TENANT_ID=${{ secrets.AZURE_TENANT_ID }}" >> $GITHUB_ENV
+
+      - name: Azure Login with Managed Identity
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.USER_ASSIGNED_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.10.4
+
+      - name: Terraform Init
+        env:
+          ARM_USE_MSI: true
+          ARM_CLIENT_ID: ${{ secrets.USER_ASSIGNED_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+        run: |
+          terraform init \
+            -backend-config="resource_group_name=${{ env.TERRAFORM_STORAGE_RG }}" \
+            -backend-config="storage_account_name=${{ env.TERRAFORM_STORAGE_ACCOUNT }}" \
+            -backend-config="container_name=${{ env.TERRAFORM_STORAGE_CONTAINER }}" \
+            -backend-config="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" \
+            -backend-config="tenant_id=${{ secrets.AZURE_TENANT_ID }}" \
+            -backend-config="client_id=${{ secrets.USER_ASSIGNED_CLIENT_ID }}" \
+            -backend-config="use_oidc=true" \
+            -backend-config="key=02-service-kv.tfstate"
+        working-directory: Terraform/02-service-kv
+
+      - name: Terraform Destroy
+        run: terraform destroy -auto-approve
+        working-directory: Terraform/02-service-kv
+        env:
+          ARM_USE_MSI: true
+          ARM_CLIENT_ID: ${{ secrets.USER_ASSIGNED_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+
+  service-uai:
+    needs: [service-web, service-acr, service-kv]
+    if: inputs.service-uai == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform Azure Auth
+        run: |
+          echo "ARM_USE_OIDC=true" >> $GITHUB_ENV
+          echo "ARM_OIDC_TOKEN_FILE_PATH=${{ env.ACTIONS_ID_TOKEN_REQUEST_TOKEN }}" >> $GITHUB_ENV
+          echo "ARM_CLIENT_ID=${{ secrets.USER_ASSIGNED_CLIENT_ID }}" >> $GITHUB_ENV
+          echo "ARM_SUBSCRIPTION_ID=${{ secrets.AZURE_SUBSCRIPTION_ID }}" >> $GITHUB_ENV
+          echo "ARM_TENANT_ID=${{ secrets.AZURE_TENANT_ID }}" >> $GITHUB_ENV
+
+      - name: Azure Login with Managed Identity
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.USER_ASSIGNED_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.10.4
+
+      - name: Terraform Init
+        env:
+          ARM_USE_OIDC: true
+          ARM_OIDC_TOKEN_FILE_PATH: ${{ env.ACTIONS_ID_TOKEN_REQUEST_TOKEN }}
+          ARM_CLIENT_ID: ${{ secrets.USER_ASSIGNED_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+        run: |
+          terraform init \
+            -backend-config="resource_group_name=${{ env.TERRAFORM_STORAGE_RG }}" \
+            -backend-config="storage_account_name=${{ env.TERRAFORM_STORAGE_ACCOUNT }}" \
+            -backend-config="container_name=${{ env.TERRAFORM_STORAGE_CONTAINER }}" \
+            -backend-config="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" \
+            -backend-config="tenant_id=${{ secrets.AZURE_TENANT_ID }}" \
+            -backend-config="client_id=${{ secrets.USER_ASSIGNED_CLIENT_ID }}" \
+            -backend-config="use_oidc=true" \
+            -backend-config="key=01-service-uai.tfstate"
+        working-directory: Terraform/01-service-uai
+
+      - name: Terraform Destroy
+        run: terraform destroy -auto-approve
+        working-directory: Terraform/01-service-uai
+        env:
+          ARM_USE_OIDC: true
+          ARM_OIDC_TOKEN_FILE_PATH: ${{ env.ACTIONS_ID_TOKEN_REQUEST_TOKEN }}
+          ARM_CLIENT_ID: ${{ secrets.USER_ASSIGNED_CLIENT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+
+  storage-deployment:
+    needs: [service-web, service-acr, service-kv, service-uai]
+    if: inputs.service-storage == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Azure Login with Managed Identity
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.USER_ASSIGNED_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          enable-AzPSSession: true
+
+      - name: Install Az PowerShell module
+        shell: pwsh
+        run: |
+          Install-Module -Name Az -Force -AllowClobber -Scope CurrentUser
+
+      - name: Setup Azure PowerShell Context
+        shell: pwsh
+        run: |
+          Set-AzContext -Subscription "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+
+      - name: Remove Storage Account
+        if: inputs.service-storage == true
+        shell: pwsh
+        run: |
+          Remove-AzResourceGroup -Name "${{ env.TERRAFORM_STORAGE_RG }}" -Force
