@@ -11,6 +11,7 @@ terraform {
 provider "azurerm" {
   features {}
   use_msi = true
+  skip_provider_registration = true
 }
 #######-----------Declaring Data for the process -----------------------------------------#
 

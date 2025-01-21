@@ -129,7 +129,6 @@ jobs:
         working-directory: Terraform/01-service-uai
 
       - name: Terraform Apply
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve tfplan
         working-directory: Terraform/01-service-uai
 
@@ -183,7 +182,6 @@ jobs:
         working-directory: Terraform/02-service-kv
 
       - name: Terraform Apply
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve tfplan
         working-directory: Terraform/02-service-kv
 
@@ -239,7 +237,6 @@ jobs:
         working-directory: Terraform/03-service-acr
 
       - name: Terraform Apply
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve tfplan
         working-directory: Terraform/03-service-acr
 
@@ -326,6 +323,5 @@ jobs:
         working-directory: Terraform/04-service-web
 
       - name: Terraform Apply
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve tfplan
         working-directory: Terraform/04-service-web
