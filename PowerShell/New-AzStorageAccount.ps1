@@ -29,8 +29,6 @@ param (
     [string] $tfBackendContainerName
 )
 
-# Connect using managed identity
-Connect-AzAccount -Identity
 
 # Get Storage account, if it exists.
 $storageAccount = Get-AzStorageAccount -Name $tfBackendStorageAccountName -ResourceGroupName $tfBackendResourceGroupName -ErrorAction SilentlyContinue;
