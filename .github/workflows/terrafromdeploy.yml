@@ -171,10 +171,10 @@ jobs:
             -backend-config="resource_group_name=${{ env.TERRAFORM_STORAGE_RG }}" \
             -backend-config="storage_account_name=${{ env.TERRAFORM_STORAGE_ACCOUNT }}" \
             -backend-config="container_name=${{ env.TERRAFORM_STORAGE_CONTAINER }}" \
-            -backend-config="use_msi=true" \
             -backend-config="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" \
             -backend-config="tenant_id=${{ secrets.AZURE_TENANT_ID }}" \
             -backend-config="client_id=${{ secrets.USER_ASSIGNED_CLIENT_ID }}" \
+            -backend-config="use_oidc=true" \
             -backend-config="key=02-service-kv.tfstate"
         working-directory: Terraform/02-service-kv
 
@@ -227,10 +227,10 @@ jobs:
             -backend-config="resource_group_name=${{ env.TERRAFORM_STORAGE_RG }}" \
             -backend-config="storage_account_name=${{ env.TERRAFORM_STORAGE_ACCOUNT }}" \
             -backend-config="container_name=${{ env.TERRAFORM_STORAGE_CONTAINER }}" \
-            -backend-config="use_msi=true" \
             -backend-config="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" \
             -backend-config="tenant_id=${{ secrets.AZURE_TENANT_ID }}" \
             -backend-config="client_id=${{ secrets.USER_ASSIGNED_CLIENT_ID }}" \
+            -backend-config="use_oidc=true" \
             -backend-config="key=03-service-acr.tfstate"
         working-directory: Terraform/03-service-acr
 
@@ -314,10 +314,10 @@ jobs:
             -backend-config="resource_group_name=${{ env.TERRAFORM_STORAGE_RG }}" \
             -backend-config="storage_account_name=${{ env.TERRAFORM_STORAGE_ACCOUNT }}" \
             -backend-config="container_name=${{ env.TERRAFORM_STORAGE_CONTAINER }}" \
-            -backend-config="use_msi=true" \
             -backend-config="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" \
             -backend-config="tenant_id=${{ secrets.AZURE_TENANT_ID }}" \
             -backend-config="client_id=${{ secrets.USER_ASSIGNED_CLIENT_ID }}" \
+            -backend-config="use_oidc=true" \
             -backend-config="key=04-service-web.tfstate"
         working-directory: Terraform/04-service-web
 
