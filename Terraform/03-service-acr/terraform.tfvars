@@ -2,7 +2,7 @@ resource_group_name = "MDC-Demo-rg"
 
 container_registry = {
     name                = "mdcdemoacr01"
-    sku                 = "basic"
+    sku                 = "Basic"
     admin_enabled       = true
 }
 
