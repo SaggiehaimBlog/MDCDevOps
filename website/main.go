@@ -12,6 +12,7 @@ import (
     "math/rand"
     "time"
     "fmt"
+    "github.com/git-lfs/git-lfs/v3/errors"  // Add git-lfs package import
 )
 
 type Article struct {
@@ -156,4 +157,12 @@ func handleLoadMore(w http.ResponseWriter, r *http.Request) {
         // Don't write header here since template execution might have already written it
         log.Printf("Template execution error: %v", err)
     }
+}
+
+// checkLFSError is a utility function that wraps errors with LFS context
+func checkLFSError(err error, operation string) error {
+    if err != nil {
+        return errors.NewWrappedError(err, "LFS operation failed: %s", operation)
+    }
+    return nil
 }
