@@ -1,8 +1,9 @@
 :root {
-    --primary-color: #2c3e50;
-    --secondary-color: #3498db;
-    --text-color: #333;
-    --background-color: #f5f6fa;
+    --primary-color: #FA582D;    /* Palo Alto Networks' red */
+    --secondary-color: #FA582D;  /* Using the same red for secondary */
+    --text-color: #FFFFFF;       /* White text for dark theme */
+    --background-color: #1F1F1F; /* Dark background */
+    --card-background: #2D2D2D;  /* Slightly lighter than background for cards */
 }
 
 body {
@@ -11,6 +12,7 @@ body {
     margin: 0;
     padding: 0;
     background-color: var(--background-color);
+    color: var(--text-color);
 }
 
 .container {
@@ -64,7 +66,7 @@ main {
 }
 
 .news-card {
-    background: white;
+    background: var(--card-background);
     border-radius: 8px;
     padding: 1.5rem;
     margin-bottom: 1.5rem;
@@ -80,11 +82,11 @@ main {
 
 .news-card h2 {
     margin-top: 0;
-    color: var(--primary-color);
+    color: var(--text-color);
 }
 
 .meta {
-    color: #666;
+    color: #CCCCCC;  /* Light gray for meta text */
     font-size: 0.9rem;
 }
 
@@ -105,17 +107,17 @@ main {
 }
 
 footer {
-    background-color: var(--primary-color);
+    background-color: var(--card-background);
     color: white;
     padding: 1rem 0;
     margin-top: 2rem;
 }
 
 .featured-article {
+    background: var(--card-background);
     display: grid;
     grid-template-columns: 1.2fr 1fr;
     gap: 2rem;
-    background: white;
     border-radius: 8px;
     padding: 0;
     margin-bottom: 2rem;
@@ -141,7 +143,7 @@ footer {
 .featured-content h2 {
     font-size: 2rem;
     margin-bottom: 1rem;
-    color: var(--primary-color);
+    color: var(--text-color);
 }
 
 .article-image {
@@ -160,6 +162,64 @@ footer {
 
 .article-content {
     flex: 1;
+    color: var(--text-color);
+}
+
+.about-section {
+    background: var(--card-background);
+    padding: 2rem;
+    border-radius: 8px;
+    margin: 2rem 0;
+}
+
+.about-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.about-content h1 {
+    color: var(--primary-color);
+    margin-bottom: 2rem;
+}
+
+.about-content h2 {
+    color: var(--text-color);
+    margin: 2rem 0 1rem;
+}
+
+.about-content ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.about-content ul li {
+    padding: 0.5rem 0;
+    color: var(--text-color);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.feature {
+    background: rgba(250,88,45,0.1);
+    padding: 1.5rem;
+    border-radius: 6px;
+    border: 1px solid var(--primary-color);
+}
+
+.feature h3 {
+    color: var(--primary-color);
+    margin-top: 0;
+}
+
+.feature p {
+    color: var(--text-color);
+    margin: 0;
 }
 
 @media (max-width: 768px) {

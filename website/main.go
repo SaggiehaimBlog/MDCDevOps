@@ -14,6 +14,19 @@ import (
     "fmt"
 )
 
+// Add new handler function
+func handleAbout(w http.ResponseWriter, r *http.Request) {
+    tmpl, err := template.ParseFiles("templates/about.html")
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+
+    if err := tmpl.Execute(w, nil); err != nil {
+        log.Printf("Template execution error: %v", err)
+    }
+}
+
 type Article struct {
     ID          string `json:"id"`
     Title       string `json:"title"`
@@ -107,6 +120,8 @@ func main() {
     // Routes
     http.HandleFunc("/", handleHome)
     http.HandleFunc("/load-more", handleLoadMore)
+    // Add new route
+    http.HandleFunc("/about", handleAbout)
 
     log.Println("Server starting on :8080...")
     log.Fatal(http.ListenAndServe(":8080", nil))
