@@ -244,7 +244,7 @@ jobs:
     needs: service-acr
     if: |
       inputs.service-container == true &&
-      (github.event_name == 'push' && contains(github.event.changes, 'website/'))
+      (github.event_name == 'push' && contains(github.event.changes, 'website/')) || always()
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
