@@ -10,7 +10,7 @@ terraform {
 
 provider "azurerm" {
   features {}
-  use_msi = true
+  use_oidc = true
   skip_provider_registration = true
 }
 
@@ -34,8 +34,8 @@ data "azurerm_container_registry" "acr" {
 
 resource "azurerm_app_service_plan" "website" {
   name                = var.app_service_plan.name
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
+  location            = data.azurerm_resource_group.rg.location
+  resource_group_name = data.azurerm_resource_group.rg.name
   kind                = var.app_service_plan.kind
   reserved            = var.app_service_plan.reserved
 
@@ -48,8 +48,8 @@ resource "azurerm_app_service_plan" "website" {
 
 resource "azurerm_app_service" "container" {
   name                = var.app_service.name
-  location            = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
+  location            = data.azurerm_resource_group.rg.location
+  resource_group_name = data.azurerm_resource_group.rg.name
   app_service_plan_id = azurerm_app_service_plan.website.id
 
   identity {

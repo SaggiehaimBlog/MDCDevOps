@@ -10,7 +10,7 @@ terraform {
 
 provider "azurerm" {
   features {}
-  use_msi = true
+  use_oidc = true
   skip_provider_registration = true
 }
 
