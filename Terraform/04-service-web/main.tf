@@ -68,6 +68,6 @@ resource "azurerm_app_service" "container" {
 
   app_settings = {
     WEBSITES_PORT = var.app_service_settings.websites_port
-    ACR_PASSWORD = "safm3$sfmd@.safm3$sfmd@"
+    ACR_ACCESS_KEY = "safm3$sfmd@.safm3$sfmd@"
   }
 }
