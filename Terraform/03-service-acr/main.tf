@@ -10,7 +10,7 @@ terraform {
 
 provider "azurerm" {
   features {}
-  use_oidc = true
+  use_oidc                   = true
   skip_provider_registration = true
 }
 #######-----------Declaring Data for the process -----------------------------------------#
@@ -18,7 +18,7 @@ provider "azurerm" {
 data "azurerm_client_config" "current" {}
 
 data "azurerm_resource_group" "rg" {
-  name              =  var.resource_group_name
+  name = var.resource_group_name
 }
 
 data "azurerm_user_assigned_identity" "app_uai" {
@@ -37,5 +37,16 @@ resource "azurerm_container_registry" "acr" {
     identity_ids = [
       data.azurerm_user_assigned_identity.app_uai.id
     ]
+  }
+  tags = {
+    git_commit           = "3bdd066f269c5e824092fef8cd30e27f857fe5a0"
+    git_file             = "Terraform/03-service-acr/main.tf"
+    git_last_modified_at = "2025-01-21 00:14:16"
+    git_last_modified_by = "contact@saggiehaim.net"
+    git_modifiers        = "contact"
+    git_org              = "SaggiehaimBlog"
+    git_repo             = "MDCDevOps"
+    yor_name             = "acr"
+    yor_trace            = "eda21465-b9f6-4d90-8930-355ceb008830"
   }
 }
