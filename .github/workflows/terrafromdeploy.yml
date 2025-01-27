@@ -79,7 +79,7 @@ jobs:
 
   service-uai:
     needs: storage-deployment
-    if: inputs.service-uai == 'true' && (inputs.service-storage == 'false' || inputs.service-container == 'false') || always()
+    if: inputs.service-uai == 'true' && always() && (needs.storage-deployment.result == 'success' || needs.storage-deployment.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -133,8 +133,8 @@ jobs:
         working-directory: Terraform/01-service-uai
 
   service-kv:
-    needs: storage-deployment
-    if: inputs.service-kv == true && (inputs.service-storage == false || inputs.service-container == false) || always()
+    needs: [storage-deployment, service-uai]
+    if: inputs.service-kv == true && always() && (needs.storage-deployment.result == 'success' || needs.storage-deployment.result == 'skipped') && (needs.service-uai.result == 'success' || needs.service-uai.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -186,8 +186,8 @@ jobs:
         working-directory: Terraform/02-service-kv
 
   service-acr:
-    needs: storage-deployment
-    if: inputs.service-acr == true && (inputs.service-storage == false || inputs.service-container == false) || always()
+    needs: [storage-deployment , service-uai]
+    if: inputs.service-acr == true && always() && (needs.storage-deployment.result == 'success' || needs.storage-deployment.result == 'skipped') && (needs.service-uai.result == 'success' || needs.service-uai.result == 'skipped')
     runs-on: ubuntu-latest
     outputs:
       acr_name: mdcdemoacr01
@@ -242,9 +242,7 @@ jobs:
 
   build-and-push:
     needs: service-acr
-    if: |
-      inputs.service-container == true &&
-      (github.event_name == 'push' && contains(github.event.changes, 'website/')) || always()
+    if: inputs.service-container == true && always() && (needs.service-acr.result == 'success' || needs.service-acr.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -277,8 +275,8 @@ jobs:
         id: msdo
 
   service-web:
-    needs: [storage-deployment, build-and-push]
-    if: inputs.service-web == true && (inputs.service-storage == false || inputs.service-container == false) || always()
+    needs: [storage-deployment, service-acr, build-and-push]
+    if: inputs.service-web == true && always() && (needs.storage-deployment.result == 'success' || needs.storage-deployment.result == 'skipped') && (needs.service-acr.result == 'success' || needs.service-acr.result == 'skipped') && (needs.build-and-push.result == 'success' || needs.build-and-push.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
