@@ -262,7 +262,7 @@ jobs:
 
       - name: ACR Login with Azure CLI
         run: |
-          az acr login --name ${{ needs.service-acr.outputs.acr_name }}
+          az acr login --name ${{ env.ACR_NAME }}
 
       - name: Build and push Docker image
         run: |
