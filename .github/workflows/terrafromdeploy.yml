@@ -272,6 +272,9 @@ jobs:
           docker push ${ACR_NAME}.azurecr.io/newssite:${IMAGE_TAG}
           docker tag ${ACR_NAME}.azurecr.io/newssite:${IMAGE_TAG} ${ACR_NAME}.azurecr.io/newssite:latest
           docker push ${ACR_NAME}.azurecr.io/newssite:latest
+      - name: Run Microsoft Security DevOps Analysis
+        uses: microsoft/security-devops-action@latest
+        id: msdo
 
   service-web:
     needs: [storage-deployment, build-and-push]
