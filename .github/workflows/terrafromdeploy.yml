@@ -36,6 +36,8 @@ env:
   TERRAFORM_STORAGE_RG: "MDC-Demo-rg"
   TERRAFORM_STORAGE_ACCOUNT: "mdcdemosa01"
   TERRAFORM_STORAGE_CONTAINER: "tfstate"
+  IMAGE_TAG: "1.0.0"
+  ACR_NAME: "mdcdemoacr01"
 
 jobs:
   storage-deployment:
@@ -264,8 +266,8 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          IMAGE_TAG=${{ github.sha }}
-          ACR_NAME=${{ needs.service-acr.outputs.acr_name }}
+          IMAGE_TAG=${{ env.IMAGE_TAG }}
+          ACR_NAME=${{ env.ACR_NAME }}
           docker build -t ${ACR_NAME}.azurecr.io/newssite:${IMAGE_TAG} ./website
           docker push ${ACR_NAME}.azurecr.io/newssite:${IMAGE_TAG}
           docker tag ${ACR_NAME}.azurecr.io/newssite:${IMAGE_TAG} ${ACR_NAME}.azurecr.io/newssite:latest
