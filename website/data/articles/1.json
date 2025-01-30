@@ -1,7 +1,7 @@
 {
     "id": "5",
-    "title": "Palo Alto Finally managed to sign Saggie Haim",
-    "content": "Saggie Haim, a well known figure in the tech industry, has been signed by Palo Alto. This move is expected to bring significant changes and improvements to the company's operations and strategies.",
+    "title": "Saggie Haim speaking on Microsoft Defender for Cloud: DevOps",
+    "content": "Saggie Haim, Microsoft MVP for cloud security & XDR, showcase the capabilities of Microsoft Defender for Cloud: DevOps, including its integration with GitHub and Azure DevOps. He demonstrates how to set up the service, configure security policies, and monitor vulnerabilities in code repositories. The session highlights best practices for securing DevOps environments and emphasizes the importance of continuous security monitoring.",
     "author": "Sarah Wilson",
     "publishDate": "2024-01-21",
     "imageUrl": "/static/images/saggie.jpeg"
