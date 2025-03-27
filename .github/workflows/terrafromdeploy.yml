@@ -81,7 +81,7 @@ jobs:
 
   service-uai:
     needs: storage-deployment
-    if: inputs.service-uai == 'true' && always() 
+    if: inputs.service-uai == true && always() && (needs.storage-deployment == 'success' || needs.storage-deployment == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
