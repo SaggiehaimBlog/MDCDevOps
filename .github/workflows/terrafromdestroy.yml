@@ -29,7 +29,7 @@ permissions:
   contents: read
 
 env:
-  TERRAFORM_STORAGE_RG: "MDC-Demo-rg"
+  TERRAFORM_STORAGE_RG: "MDC-Demo"
   TERRAFORM_STORAGE_ACCOUNT: "mdcdemosa01"
   TERRAFORM_STORAGE_CONTAINER: "tfstate"
 

@@ -1,4 +1,4 @@
-resource_group_name = "MDC-Demo-rg"
+resource_group_name = "MDC-Demo"
 
 app_service_plan = {
   name     = "mdc-demo-asp-01"
@@ -21,7 +21,7 @@ app_service_settings = {
 
 import_resources = {
   user_assigned_identity_name    = "mdc-demo-uai-01"
-  user_assigned_identity_rg_name = "MDC-Demo-rg"
+  user_assigned_identity_rg_name = "MDC-Demo"
   container_registry_name        = "mdcdemoacr01"
-  container_registry_rg_name     = "MDC-Demo-rg"
+  container_registry_rg_name     = "MDC-Demo"
 }

@@ -1,4 +1,4 @@
-resource_group_name                     = "MDC-Demo-rg"
+resource_group_name                     = "MDC-Demo"
 
 keyvault_config = {
     name                            = "MDC-Demo-kv"
@@ -11,5 +11,5 @@ keyvault_config = {
 
 kv_import_resources = {
     user_assigned_identity_name     = "mdc-demo-uai-01"
-    user_assigned_identity_rg_name = "MDC-Demo-rg"
+    user_assigned_identity_rg_name = "MDC-Demo"
 }

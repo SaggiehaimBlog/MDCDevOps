@@ -1,4 +1,4 @@
-resource_group_name = "MDC-Demo-rg"
+resource_group_name = "MDC-Demo"
 
 container_registry = {
     name                = "mdcdemoacr01"
@@ -8,5 +8,5 @@ container_registry = {
 
 import_resources = {
     user_assigned_identity_name    = "mdc-demo-uai-01"
-    user_assigned_identity_rg_name = "MDC-Demo-rg"
+    user_assigned_identity_rg_name = "MDC-Demo"
 }
